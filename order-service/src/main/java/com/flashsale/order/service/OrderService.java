@@ -79,12 +79,39 @@ public class OrderService {
                         order.getId(), order.getStatus());
                 return;
             }
-            if (event.success()) {
-                order.markConfirmed();
-            } else {
-                order.markFailed(event.failureReason());
+
+            try {
+                if (event.success()) {
+                    order.markConfirmed();
+                    orderRepository.save(order);
+                } else {
+                    order.markFailed(event.failureReason());
+                    orderRepository.save(order);
+
+                    // 1. Construct the payload using the data the OrderService owns
+                    com.flashsale.common.events.OrderFailedEvent outboxPayload =
+                            new com.flashsale.common.events.OrderFailedEvent(
+                                    order.getId().toString(),
+                                    order.getReservationId(),
+                                    order.getEventId(),
+                                    order.getSeatId(),
+                                    event.failureReason()
+                            );
+
+                    // 2. Wrap it in the generic Outbox entity
+                    OutboxEvent outboxEvent = new OutboxEvent(
+                            "Order", order.getId().toString(), "OrderFailedEvent",
+                            objectMapper.writeValueAsString(outboxPayload)
+                    );
+
+                    // 3. Save to outbox in the same transaction as the order update
+                    outboxEventRepository.save(outboxEvent);
+                }
+            } catch (Exception e) {
+                // If serialization fails, the entire transaction rolls back,
+                // leaving the order in PENDING state so it can be retried.
+                throw new RuntimeException("Failed to process payment completion", e);
             }
-            orderRepository.save(order);
         }, () -> log.warn("PaymentCompletedEvent for unknown orderId={}", event.orderId()));
     }
 }

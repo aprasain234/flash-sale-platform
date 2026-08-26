@@ -34,3 +34,7 @@ public class ApiGatewayApplication {
         );
     }
 }
+
+// postgres: 71e7a0c6-3309-49ac-bc44-562067b7ad1e
+//
+//reser: ea2d36db-2745-4d64-88b2-d2ccdf87ca25
