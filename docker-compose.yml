@@ -21,7 +21,7 @@ services:
     ports:
       - "6379:6379"
 
-  postgres:
+  postgres-order:
     image: postgres:16-alpine
     ports:
       - "5433:5432"
@@ -30,7 +30,19 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=ashish123
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata-orders:/var/lib/postgresql/data
+
+  postgres-catalog:
+    image: postgres:16-alpine
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=flashsale_catalog
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=ashish123
+    volumes:
+      - pgdata-catalog:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
+  pgdata-orders:
+  pgdata-catalog:

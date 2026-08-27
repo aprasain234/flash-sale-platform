@@ -33,6 +33,7 @@
     <module>order-service</module>
     <module>payment-service</module>
     <module>notification-service</module>
+    <module>catalog-service</module>
   </modules>
 
   <dependencyManagement>
