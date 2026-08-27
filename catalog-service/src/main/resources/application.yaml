@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: catalog-service
+  datasource:
+    url: jdbc:postgresql://localhost:5434/flashsale_catalog
+    username: postgres
+    password: ashish123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    fail-on-missing-locations: true # <--- This prevents silent failures
+
+server:
+  port: 8086
